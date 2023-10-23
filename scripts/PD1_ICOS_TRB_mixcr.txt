@@ -1,0 +1,56 @@
+#!/bin/bash
+#SBATCH -p himem
+#SBATCH --cpus-per-task=20
+#SBATCH --time=4:00:00
+#SBATCH --array=0-14
+echo "job ID: $SLURM_JOBID"
+echo "array task ID: $SLURM_ARRAY_TASK_ID"
+export COUNTER=$SLURM_ARRAY_TASK_ID
+
+input_file=(
+/home/gdskinnerlab/nes002/chimp_TCR/raw_data/p21002-s001_4x0395_wk11_PD1-ICOS_high_S47_R1_001.fastq.gz
+/home/gdskinnerlab/nes002/chimp_TCR/raw_data/p21002-s002_4x0395_wk11_PD1-ICOS_intermediate_S48_R1_001.fastq.gz
+/home/gdskinnerlab/nes002/chimp_TCR/raw_data/p21002-s003_4x0395_wk11_PD1-ICOS_negative_S49_R1_001.fastq.gz
+/home/gdskinnerlab/nes002/chimp_TCR/raw_data/p21002-s004_4x0339_wk8_PD1-ICOS_high_S50_R1_001.fastq.gz
+/home/gdskinnerlab/nes002/chimp_TCR/raw_data/p21002-s005_4x0339_wk8_PD1-ICOS_intermediate_S51_R1_001.fastq.gz
+/home/gdskinnerlab/nes002/chimp_TCR/raw_data/p21002-s006_4x0339_wk8_PD1-ICOS_negative_S52_R1_001.fastq.gz
+/home/gdskinnerlab/nes002/chimp_TCR/raw_data/p21002-s007_4x0526_wk8_PD1-ICOS_high_S53_R1_001.fastq.gz
+/home/gdskinnerlab/nes002/chimp_TCR/raw_data/p21002-s008_4x0526_wk8_PD1-ICOS_intermediate_S54_R1_001.fastq.gz
+/home/gdskinnerlab/nes002/chimp_TCR/raw_data/p21002-s009_4x0526_wk8_PD1-ICOS_negative_S55_R1_001.fastq.gz
+/home/gdskinnerlab/nes002/chimp_TCR/raw_data/p21002-s010_4x0405_wk8_PD1-ICOS_high_S56_R1_001.fastq.gz
+/home/gdskinnerlab/nes002/chimp_TCR/raw_data/p21002-s011_4x0405_wk8_PD1-ICOS_intermediate_S57_R1_001.fastq.gz
+/home/gdskinnerlab/nes002/chimp_TCR/raw_data/p21002-s012_4x0405_wk8_PD1-ICOS_negative_S58_R1_001.fastq.gz
+/home/gdskinnerlab/nes002/chimp_TCR/raw_data/p21002-s013_4x0312_wk8_PD1-ICOS_high_S59_R1_001.fastq.gz
+/home/gdskinnerlab/nes002/chimp_TCR/raw_data/p21002-s014_4x0312_wk8_PD1-ICOS_intermediate_S60_R1_001.fastq.gz
+/home/gdskinnerlab/nes002/chimp_TCR/raw_data/p21002-s015_4x0312_wk8_PD1-ICOS_negative_S61_R1_001.fastq.gz
+)
+
+output=(
+/home/gdskinnerlab/nes002/chimp_TCR/mixcr_output/p21002-s001_4x0395_wk11_PD1-ICOS_high_S47
+/home/gdskinnerlab/nes002/chimp_TCR/mixcr_output/p21002-s002_4x0395_wk11_PD1-ICOS_intermediate_S48
+/home/gdskinnerlab/nes002/chimp_TCR/mixcr_output/p21002-s003_4x0395_wk11_PD1-ICOS_negative_S49
+/home/gdskinnerlab/nes002/chimp_TCR/mixcr_output/p21002-s004_4x0339_wk8_PD1-ICOS_high_S50
+/home/gdskinnerlab/nes002/chimp_TCR/mixcr_output/p21002-s005_4x0339_wk8_PD1-ICOS_intermediate_S51
+/home/gdskinnerlab/nes002/chimp_TCR/mixcr_output/p21002-s006_4x0339_wk8_PD1-ICOS_negative_S52
+/home/gdskinnerlab/nes002/chimp_TCR/mixcr_output/p21002-s007_4x0526_wk8_PD1-ICOS_high_S53
+/home/gdskinnerlab/nes002/chimp_TCR/mixcr_output/p21002-s008_4x0526_wk8_PD1-ICOS_intermediate_S54
+/home/gdskinnerlab/nes002/chimp_TCR/mixcr_output/p21002-s009_4x0526_wk8_PD1-ICOS_negative_S55
+/home/gdskinnerlab/nes002/chimp_TCR/mixcr_output/p21002-s010_4x0405_wk8_PD1-ICOS_high_S56
+/home/gdskinnerlab/nes002/chimp_TCR/mixcr_output/p21002-s011_4x0405_wk8_PD1-ICOS_intermediate_S57
+/home/gdskinnerlab/nes002/chimp_TCR/mixcr_output/p21002-s012_4x0405_wk8_PD1-ICOS_negative_S58
+/home/gdskinnerlab/nes002/chimp_TCR/mixcr_output/p21002-s013_4x0312_wk8_PD1-ICOS_high_S59
+/home/gdskinnerlab/nes002/chimp_TCR/mixcr_output/p21002-s014_4x0312_wk8_PD1-ICOS_intermediate_S60
+/home/gdskinnerlab/nes002/chimp_TCR/mixcr_output/p21002-s015_4x0312_wk8_PD1-ICOS_negative_S61
+)
+
+
+set -e
+module load Java/18
+
+export PATH=/home/gdskinnerlab/nes002/software/mixcr:$PATH
+
+/home/gdskinnerlab/nes002/software/mixcr analyze rnaseq-full-length \
+        --species hsa \
+        --export-productive-clones-only \
+        ${input_file[$COUNTER]} \
+        ${output[$COUNTER]}
